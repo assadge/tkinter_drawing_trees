@@ -5,8 +5,6 @@ from random import randint
 top = tkinter.Tk()
 
 
-
-
 def falling_leaf():
     base_x = randint(10*size, 100*size)
     base_y = 45 * size
@@ -47,35 +45,20 @@ for point in trunk_points:
 
 trunk = C.create_polygon(scaled_trunk_coords, fill='brown', smooth=True)
 
+leafs_points = [
+    (42.5, 50), (47.5, 52), (52.5, 50), (60, 55),
+    (80, 60), (90, 55), (95, 45), (102, 35), (95, 25),
+    (97, 25), (80, 10), (70, 5), (62, 10), (50, 5),
+    (35, 10), (20, 15), (15, 25), (10, 35), (15, 45),
+    (10, 55), (20, 65), (35, 60), (42.5, 50)
+]
 
-leafs = C.create_polygon(
-    base_x + 42.5 * size, base_y + 50 * size,
-    base_x + 47.5 * size, base_y + 52 * size,
-    base_x + 52.5 * size, base_y + 50 * size,
-    base_x + 60 * size, base_y + 55 * size,
-    base_x + 80 * size, base_y + 60 * size,
-    base_x + 90 * size, base_y + 55 * size,
-    base_x + 95 * size, base_y + 45 * size,
-    base_x + 102 * size, base_y + 35 * size,
-    base_x + 95 * size, base_y + 25 * size,
-    base_x + 97 * size, base_y + 25 * size,
-    base_x + 80 * size, base_y + 10 * size,
-    base_x + 70 * size, base_y + 5 * size,
-    base_x + 62 * size, base_y + 10 * size,
-    base_x + 50 * size, base_y + 5 * size,
-    base_x + 35 * size, base_y + 10 * size,
-    base_x + 20 * size, base_y + 15 * size,
-    base_x + 15 * size, base_y + 25 * size,
-    base_x + 10 * size, base_y + 35 * size,
-    base_x + 15 * size, base_y + 45 * size,
+scaled_leafs_coords = []
+for point in leafs_points:
+    scaled_leafs_coords.append(size * point[0] + base_x)
+    scaled_leafs_coords.append(size * point[1] + base_y)
 
-    base_x + 10 * size, base_y + 55 * size,
-    base_x + 20 * size, base_y + 65 * size,
-    base_x + 35 * size, base_y + 60 * size,
-    base_x + 42.5 * size, base_y + 50 * size,
-    fill='green', smooth=True
-)
-
+leafs = C.create_polygon(scaled_leafs_coords, fill='green', smooth=True)
 
 
 class Apple:

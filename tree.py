@@ -48,43 +48,6 @@ for point in trunk_points:
 trunk = C.create_polygon(scaled_trunk_coords, fill='brown', smooth=True)
 
 
-# trunk = C.create_polygon(
-#     base_x + 40 * size, base_y + 45 * size,
-#     base_x + 47.5 * size, base_y + 52 * size,
-#     base_x + 52.5 * size, base_y + 50 * size,
-#     base_x + 52.5 * size, base_y + 90 * size,
-#     base_x + 54 * size, base_y + 93 * size,
-#     base_x + 60 * size, base_y + 100 * size,
-#     base_x + 64 * size, base_y + 103 * size,
-#     base_x + 68 * size, base_y + 106 * size,
-#     base_x + 73 * size, base_y + 110 * size,
-#     base_x + 66 * size, base_y + 107 * size,
-#     base_x + 62 * size, base_y + 103 * size,
-#     base_x + 55 * size, base_y + 100 * size,
-#     base_x + 53 * size, base_y + 103 * size,
-#     base_x + 54 * size, base_y + 108 * size,
-#     base_x + 50 * size, base_y + 115 * size,
-#     base_x + 55 * size, base_y + 109 * size,
-#     base_x + 48 * size, base_y + 103 * size,
-#     base_x + 50 * size, base_y + 100 * size,
-#     base_x + 40 * size, base_y + 105 * size,
-#
-#     base_x + 27 * size, base_y + 107 * size,
-#     base_x + 17 * size, base_y + 116 * size,
-#     base_x + 18 * size, base_y + 105 * size,
-#     base_x + 30 * size, base_y + 102 * size,
-#     base_x + 35 * size, base_y + 100 * size,
-#     base_x + 43 * size, base_y + 90 * size,
-#     base_x + 42.5 * size, base_y + 45 * size,
-#     fill='brown', smooth=True
-# )
-
-# for i in range(1, 7000):
-#     base_x = randint(10*size, 100*size)
-#     base_y = randint(5*size, 65*size)
-#     C.create_polygon(base_x + 5 * size, base_y + 3 * size, base_x + 5.5 * size, base_y + 1 * size, base_x + 7 * size, base_y + 0 * size, base_x + 7 * size, base_y + 2 * size, base_x + 5 * size, base_y + 3 * size,  smooth=True, fill='green')
-
-
 leafs = C.create_polygon(
     base_x + 42.5 * size, base_y + 50 * size,
     base_x + 47.5 * size, base_y + 52 * size,

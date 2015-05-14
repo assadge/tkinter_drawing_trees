@@ -108,8 +108,8 @@ class Tree:
     def generate_apple(self):
         if self.size < self.max_size:
             return
-        chance_to_grow = randint(1, 30)
-        if chance_to_grow == 5:
+        chance_to_grow = randint(1, 5)
+        if chance_to_grow == 3:
             base_x = randint(round(self.base_x + 20*self.size), round(self.base_x + 80*self.size))
             base_y = randint(round(self.base_y + 15*self.size), round(self.base_y + 50*self.size))
             apple = Apple(base_x, base_y, self.size)
@@ -169,18 +169,51 @@ def onAppleClick(event, apple):
 
 
 def make_tree(event):
+    global place1_occupied
+    global place2_occupied
+    global place3_occupied
     size = 0
-    if tree_size_combobox.current() is not -1:
-        size = tree_size_combobox.current()
-    tree = Tree(event.x, event.y, size + 1)
-    tree.growing(0)
-    tree.generate_apple()
+    # if tree_size_combobox.current() is not -1:
+    #     size = tree_size_combobox.current()
+    # if event.y < 550:
+    #     size = 1
+    # elif event.y < 600:
+    #     size = 2
+    # elif event.y < 650:
+    #     size = 3
+    # else:
+    #     size = 4
 
+    size = (200 - (700 - event.y)) / 50
+
+    if event.x < 300 and not place1_occupied:
+        place1_occupied = True
+        tree = Tree(event.x, event.y, size)
+        tree.growing(0)
+        tree.generate_apple()
+    elif event.x > 400 and event.x < 600 and not place2_occupied:
+        place2_occupied = True
+        tree = Tree(event.x, event.y, size)
+        tree.growing(0)
+        tree.generate_apple()
+    elif event.x > 800 and not place3_occupied:
+        place3_occupied = True
+        tree = Tree(event.x, event.y, size)
+        tree.growing(0)
+        tree.generate_apple()
+    tree = Tree(event.x, event.y, size)
+    tree.growing(0)
+
+
+
+
+place1_occupied = False
+place2_occupied = False
+place3_occupied = False
 
 window = tkinter.Tk()
 window.bind('<Configure>', windowdrag)
 canvas = tkinter.Canvas(window, height=WINDOW_HEIGHT, width=WINDOW_WIDTH, bg='#bbe')
-
 
 # tree = Tree(TREE_INITIAL_BASE_X, TREE_INITIAL_BASE_Y, TREE_INITIAL_SIZE)
 tool_panel = tkinter.Frame(window, height=50, width=300)

@@ -42,7 +42,7 @@ class Tree:
     def __init__(self, base_x, base_y, max_size):
         self.base_x = base_x
         self.base_y = base_y
-        self.size = 1
+        self.size = max_size
         self.max_size = max_size
 
 
@@ -58,8 +58,26 @@ class Tree:
             scaled_leafs_coords.append(self.size * point[1] + base_y)
         self.leafs = canvas.create_polygon(scaled_leafs_coords, fill='green', smooth=True)
 
-    def growing(self):
-        pass
+    def change_size(self, size):
+        self.size = size
+        scaled_trunk_coords = []
+        for point in trunk_points:
+            scaled_trunk_coords.append(self.size * point[0] + self.base_x)
+            scaled_trunk_coords.append(self.size * point[1] + self.base_y)
+
+        scaled_leafs_coords = []
+        for point in leafs_points:
+            scaled_leafs_coords.append(self.size * point[0] + self.base_x)
+            scaled_leafs_coords.append(self.size * point[1] + self.base_y)
+
+        canvas.coords(self.leafs, tkinter._flatten(scaled_leafs_coords))
+        canvas.coords(self.trunk, tkinter._flatten(scaled_trunk_coords))
+
+
+    def growing(self, i):
+        if i < self.max_size:
+            self.change_size(i)
+            canvas.after(10, self.growing, (i + 0.01))
 
     def generate_leaf(self):
         leaf_base_x = self.base_x + randint(10 * self.size, 100 * self.size)
@@ -142,13 +160,20 @@ def windowdrag(event):
     if chance_to_fall == 5:
         pass# tree.generate_leaf()
 
+
 def onAppleClick(event, apple):
     apple.isDisrupted = True
     apple.falling(1)
 
+
 def make_tree(event):
-    tree = Tree(event.x, event.y, 4)
+    size = 0
+    if tree_size_combobox.current() is not -1:
+        size = tree_size_combobox.current()
+    tree = Tree(event.x, event.y, size + 1)
+    tree.growing(0)
     tree.generate_apple()
+
 
 window = tkinter.Tk()
 window.bind('<Configure>', windowdrag)

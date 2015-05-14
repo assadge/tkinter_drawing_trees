@@ -1,5 +1,5 @@
 import tkinter
-import threading
+from tkinter.ttk import Combobox
 from random import randint
 
 WINDOW_WIDTH = 1000
@@ -9,9 +9,9 @@ GRASS_BOTTOM = WINDOW_HEIGHT
 GRASS_TOP = WINDOW_HEIGHT - 200
 GRASS_COLOR = '#5e5' #green
 
-TREE_INITIAL_BASE_X = 0
-TREE_INITIAL_BASE_Y = 0
-TREE_INITIAL_SIZE = 1
+TREE_INITIAL_BASE_X = 400
+TREE_INITIAL_BASE_Y = 1
+TREE_INITIAL_SIZE = 5
 
 
 trunk_points = [
@@ -39,55 +39,74 @@ leaf_points = [
 
 
 class Tree:
-    def __init__(self, base_x, base_y, size):
+    def __init__(self, base_x, base_y, max_size):
         self.base_x = base_x
         self.base_y = base_y
-        self.size = size
+        self.size = 1
+        self.max_size = max_size
+
 
         scaled_trunk_coords = []
         for point in trunk_points:
-            scaled_trunk_coords.append(size * point[0] + base_x)
-            scaled_trunk_coords.append(size * point[1] + base_y)
+            scaled_trunk_coords.append(self.size * point[0] + base_x)
+            scaled_trunk_coords.append(self.size * point[1] + base_y)
         self.trunk = canvas.create_polygon(scaled_trunk_coords, fill='brown', smooth=True)
 
         scaled_leafs_coords = []
         for point in leafs_points:
-            scaled_leafs_coords.append(size * point[0] + base_x)
-            scaled_leafs_coords.append(size * point[1] + base_y)
+            scaled_leafs_coords.append(self.size * point[0] + base_x)
+            scaled_leafs_coords.append(self.size * point[1] + base_y)
         self.leafs = canvas.create_polygon(scaled_leafs_coords, fill='green', smooth=True)
 
+    def growing(self):
+        pass
+
     def generate_leaf(self):
-        self.base_x = randint(10 * self.size, 100 * self.size)
-        self.base_y = 45 * self.size
+        leaf_base_x = self.base_x + randint(10 * self.size, 100 * self.size)
+        leaf_base_y = self.base_y + 45 * self.size
 
         scaled_leaf_coords = []
         for point in leaf_points:
-            scaled_leaf_coords.append(self.size * point[0] + self.base_x)
-            scaled_leaf_coords.append(self.size * point[1] + self.base_y)
+            scaled_leaf_coords.append(self.size * point[0] + leaf_base_x)
+            scaled_leaf_coords.append(self.size * point[1] + leaf_base_y)
         leaf = canvas.create_polygon(scaled_leaf_coords, fill='green', smooth=True)
 
         falling_place = randint(600, 700)
 
-        self.falling_leaf(leaf, falling_place)
+        self.falling_leaf(leaf, leaf_base_x, leaf_base_y, falling_place)
 
-    def falling_leaf(self, leaf, falling_place):
-        self.base_y += 5
-        if self.base_y < falling_place:
+    def falling_leaf(self, leaf, leaf_base_x, leaf_base_y, falling_place):
+        leaf_base_y += 5
+        if leaf_base_y < falling_place:
             scaled_leaf_coords = []
             for point in leaf_points:
-                scaled_leaf_coords.append(self.size * point[0] + self.base_x)
-                scaled_leaf_coords.append(self.size * point[1] + self.base_y)
-            canvas.coords(leaf, scaled_leaf_coords)
-            canvas.after(30, self.falling_leaf, (leaf, falling_place))
+                scaled_leaf_coords.append(self.size * point[0] + leaf_base_x)
+                scaled_leaf_coords.append(self.size * point[1] + leaf_base_y)
+            canvas.coords(leaf, tkinter._flatten(scaled_leaf_coords))
+            canvas.after(30, self.falling_leaf, leaf, leaf_base_x, leaf_base_y, falling_place)
+
+    def generate_apple(self):
+        if self.size > self.max_size:
+            return
+        chance_to_grow = randint(1, 10)
+        if chance_to_grow == 5:
+            base_x = randint(self.base_x + 20*self.size, self.base_x + 80*self.size)
+            base_y = randint(self.base_y + 15*self.size, self.base_y + 50*self.size)
+            apple = Apple(base_x, base_y, self.size)
+            apple.growing(0)
+            canvas.tag_bind(apple.apple, '<ButtonPress-1>', lambda event, apple=apple:
+                                     onAppleClick(event, apple))
+        canvas.after(2000, self.generate_apple)
 
 
 class Apple:
-    def __init__(self, base_x, base_y, size):
+    def __init__(self, base_x, base_y, max_size):
         self.isDisrupted = False
         self.base_x = base_x
         self.base_y = base_y
 
-        self.size = size
+        size = 0
+        self.max_size = max_size
         self.leaf = canvas.create_polygon(base_x + 5 * size, base_y + 3 * size, base_x + 5.5 * size, base_y + 1 * size, base_x + 7 * size, base_y + 0 * size, base_x + 7 * size, base_y + 2 * size, base_x + 5 * size, base_y + 3 * size,  smooth=True, fill='green')
         self.apple = canvas.create_polygon(base_x + 5 * size, base_y + 3 * size, base_x + 6.5 * size, base_y + 2.5 * size, base_x + 8 * size, base_y + 3 * size, base_x + 8.5 * size, base_y + 5.5 * size, base_x + 7 * size, base_y + 8 * size, base_x + 5 * size, base_y + 7.8 * size, base_x + 3 * size, base_y + 8 * size, base_x + 1.5 * size, base_y + 5.5 * size, base_x + 2 * size, base_y + 3 * size, base_x + 3.5 * size, base_y + 2.5 * size, base_x + 5 * size, base_y + 3 * size, fill='red', smooth=True, outline='black')
         self.line = canvas.create_line(base_x + 5 * size, base_y + 1 * size, base_x + 5 * size, base_y + 3 * size, width=5, fill='brown', smooth=True)
@@ -106,7 +125,7 @@ class Apple:
         canvas.coords(self.line, self.base_x + 5 * self.size, self.base_y + 1 * self.size, self.base_x + 5 * self.size, self.base_y + 3 * self.size)
 
     def growing(self, i):
-        if i < 5 and not self.isDisrupted:
+        if i < self.max_size and not self.isDisrupted:
             self.change_size(i)
             canvas.after(10, self.growing, (i + 0.01))
 
@@ -121,32 +140,33 @@ class Apple:
 def windowdrag(event):
     chance_to_fall = randint(1, 100)
     if chance_to_fall == 5:
-        tree.generate_leaf()
+        pass# tree.generate_leaf()
 
 def onAppleClick(event, apple):
     apple.isDisrupted = True
     apple.falling(1)
 
-def clock():
-
-    chance_to_grow = randint(1, 5)
-    if chance_to_grow == 3:
-        base_x = randint(20*size, 80*size)
-        base_y = randint(15*size, 50*size)
-        apple = Apple(base_x, base_y, 1)
-        apple.growing(0)
-        canvas.tag_bind(apple.apple, '<ButtonPress-1>', lambda event, apple=apple:
-                                 onAppleClick(event, apple))
-    canvas.after(500, clock)
+def make_tree(event):
+    tree = Tree(event.x, event.y, 4)
+    tree.generate_apple()
 
 window = tkinter.Tk()
 window.bind('<Configure>', windowdrag)
 canvas = tkinter.Canvas(window, height=WINDOW_HEIGHT, width=WINDOW_WIDTH, bg='#bbe')
 
-tree = Tree(TREE_INITIAL_BASE_X, TREE_INITIAL_BASE_Y, TREE_INITIAL_SIZE)
-grass = canvas.create_rectangle(0, GRASS_BOTTOM, WINDOW_WIDTH, GRASS_TOP, fill='#5e5')
 
-threading.Thread(target=clock).start()
+# tree = Tree(TREE_INITIAL_BASE_X, TREE_INITIAL_BASE_Y, TREE_INITIAL_SIZE)
+tool_panel = tkinter.Frame(window, height=50, width=300)
+tool_panel.pack()
+tree_size_label = tkinter.Label(tool_panel, text='tree size: ')
+tree_size_label.pack(side=tkinter.LEFT)
+tree_size_combobox = Combobox(tool_panel, state='readonly', values=['1', '2', '3', '4'], width=10)
+tree_size_combobox.pack()
+grass = canvas.create_rectangle(0, GRASS_BOTTOM, WINDOW_WIDTH, GRASS_TOP, fill='#5e5')
+canvas.tag_bind(grass, '<ButtonPress-1>', make_tree)
+# tree.generate_apple()
+# threading.Thread(target=tree.generate_apple).start()
+
 canvas.pack()
 
 window.mainloop()

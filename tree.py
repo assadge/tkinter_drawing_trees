@@ -49,14 +49,14 @@ class Tree:
         scaled_trunk_coords = []
         for point in trunk_points:
             scaled_trunk_coords.append(self.size * point[0] + base_x)
-            scaled_trunk_coords.append(self.size * point[1] + base_y)
-        self.trunk = canvas.create_polygon(scaled_trunk_coords, fill='brown', smooth=True)
+            scaled_trunk_coords.append(self.size * point[1] + base_y - 50)
+        self.trunk = canvas.create_polygon(scaled_trunk_coords, fill='brown', smooth=True, outline='black')
 
         scaled_leafs_coords = []
         for point in leafs_points:
             scaled_leafs_coords.append(self.size * point[0] + base_x)
-            scaled_leafs_coords.append(self.size * point[1] + base_y)
-        self.leafs = canvas.create_polygon(scaled_leafs_coords, fill='green', smooth=True)
+            scaled_leafs_coords.append(self.size * point[1] + base_y - 50)
+        self.leafs = canvas.create_polygon(scaled_leafs_coords, fill='green', smooth=True, outline='black')
 
     def change_size(self, size):
         self.size = size
@@ -77,7 +77,9 @@ class Tree:
     def growing(self, i):
         if i < self.max_size:
             self.change_size(i)
-            canvas.after(10, self.growing, (i + 0.01))
+            canvas.after(30, self.growing, (i + 0.001))
+            self.base_y += -0.1
+            self.base_x += -0.05
 
     def generate_leaf(self):
         leaf_base_x = self.base_x + randint(10 * self.size, 100 * self.size)
@@ -104,12 +106,12 @@ class Tree:
             canvas.after(30, self.falling_leaf, leaf, leaf_base_x, leaf_base_y, falling_place)
 
     def generate_apple(self):
-        if self.size > self.max_size:
+        if self.size < self.max_size:
             return
-        chance_to_grow = randint(1, 10)
+        chance_to_grow = randint(1, 30)
         if chance_to_grow == 5:
-            base_x = randint(self.base_x + 20*self.size, self.base_x + 80*self.size)
-            base_y = randint(self.base_y + 15*self.size, self.base_y + 50*self.size)
+            base_x = randint(round(self.base_x + 20*self.size), round(self.base_x + 80*self.size))
+            base_y = randint(round(self.base_y + 15*self.size), round(self.base_y + 50*self.size))
             apple = Apple(base_x, base_y, self.size)
             apple.growing(0)
             canvas.tag_bind(apple.apple, '<ButtonPress-1>', lambda event, apple=apple:

@@ -75,15 +75,15 @@ class Tree:
 
 
     def growing(self, i):
-        if i < self.max_size:
+        if i <= self.max_size:
             self.change_size(i)
-            canvas.after(30, self.growing, (i + 0.001))
+            canvas.after(10, self.growing, (i + 0.001))
             self.base_y += -0.1
             self.base_x += -0.05
 
-    def generate_leaf(self):
-        leaf_base_x = self.base_x + randint(10 * self.size, 100 * self.size)
-        leaf_base_y = self.base_y + 45 * self.size
+    def generate_leaf(self, event):
+        leaf_base_x = round(self.base_x + randint(round(10 * self.size), round(100 * self.size)))
+        leaf_base_y = round(self.base_y + 45 * self.size)
 
         scaled_leaf_coords = []
         for point in leaf_points:
@@ -106,24 +106,24 @@ class Tree:
             canvas.after(30, self.falling_leaf, leaf, leaf_base_x, leaf_base_y, falling_place)
 
     def generate_apple(self):
-        if self.size < self.max_size:
-            return
-        chance_to_grow = randint(1, 5)
-        if chance_to_grow == 3:
-            base_x = randint(round(self.base_x + 20*self.size), round(self.base_x + 80*self.size))
-            base_y = randint(round(self.base_y + 15*self.size), round(self.base_y + 50*self.size))
-            apple = Apple(base_x, base_y, self.size)
-            apple.growing(0)
-            canvas.tag_bind(apple.apple, '<ButtonPress-1>', lambda event, apple=apple:
-                                     onAppleClick(event, apple))
+        if round(self.size, 2) == self.max_size:
+            chance_to_grow = randint(1, 10)
+            if chance_to_grow == 1:
+                base_x = randint(round(self.base_x + 20*self.size), round(self.base_x + 80*self.size))
+                base_y = randint(round(self.base_y + 15*self.size), round(self.base_y + 50*self.size))
+                apple = Apple(self.base_y, base_x, base_y, self.max_size)
+                apple.growing(0)
+                canvas.tag_bind(apple.apple, '<ButtonPress-1>', lambda event, apple=apple:
+                                          onAppleClick(event, apple))
         canvas.after(2000, self.generate_apple)
 
 
 class Apple:
-    def __init__(self, base_x, base_y, max_size):
+    def __init__(self, tree_base_y, base_x, base_y, max_size):
         self.isDisrupted = False
         self.base_x = base_x
         self.base_y = base_y
+        self.tree_base_y = tree_base_y
 
         size = 0
         self.max_size = max_size
@@ -151,7 +151,7 @@ class Apple:
 
     def falling(self, i):
         self.base_y += 5
-        falling_place = randint(600, 700)
+        falling_place = randint(round(self.tree_base_y + 100 * self.size),  round(self.tree_base_y + 120 * self.size))
         if self.base_y < falling_place:
 
             self.change_position(self.base_x, self.base_y)
@@ -189,21 +189,23 @@ def make_tree(event):
     if event.x < 300 and not place1_occupied:
         place1_occupied = True
         tree = Tree(event.x, event.y, size)
+        window.bind('<Configure>', tree.generate_leaf)
         tree.growing(0)
         tree.generate_apple()
     elif event.x > 400 and event.x < 600 and not place2_occupied:
         place2_occupied = True
         tree = Tree(event.x, event.y, size)
+        window.bind('<Configure>', tree.generate_leaf)
         tree.growing(0)
         tree.generate_apple()
     elif event.x > 800 and not place3_occupied:
         place3_occupied = True
         tree = Tree(event.x, event.y, size)
+        window.bind('<Configure>', tree.generate_leaf)
         tree.growing(0)
         tree.generate_apple()
-    tree = Tree(event.x, event.y, size)
-    tree.growing(0)
-
+    # tree = Tree(event.x, event.y, size)
+    # tree.growing(0)
 
 
 

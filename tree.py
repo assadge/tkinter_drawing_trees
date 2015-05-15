@@ -81,7 +81,7 @@ class Tree:
             self.base_y += -0.1
             self.base_x += -0.05
 
-    def generate_leaf(self, event):
+    def generate_leaf(self):
         leaf_base_x = round(self.base_x + randint(round(10 * self.size), round(100 * self.size)))
         leaf_base_y = round(self.base_y + 45 * self.size)
 
@@ -91,7 +91,7 @@ class Tree:
             scaled_leaf_coords.append(self.size * point[1] + leaf_base_y)
         leaf = canvas.create_polygon(scaled_leaf_coords, fill='green', smooth=True)
 
-        falling_place = randint(600, 700)
+        falling_place = randint(round(self.base_y + 100 * self.size),  round(self.base_y + 120 * self.size))
 
         self.falling_leaf(leaf, leaf_base_x, leaf_base_y, falling_place)
 
@@ -160,7 +160,9 @@ class Apple:
 def windowdrag(event):
     chance_to_fall = randint(1, 100)
     if chance_to_fall == 5:
-        pass# tree.generate_leaf()
+        tree1.generate_leaf()
+        tree2.generate_leaf()
+        tree3.generate_leaf()
 
 
 def onAppleClick(event, apple):
@@ -172,6 +174,9 @@ def make_tree(event):
     global place1_occupied
     global place2_occupied
     global place3_occupied
+    global tree1
+    global tree2
+    global tree3
     size = 0
     # if tree_size_combobox.current() is not -1:
     #     size = tree_size_combobox.current()
@@ -188,26 +193,25 @@ def make_tree(event):
 
     if event.x < 300 and not place1_occupied:
         place1_occupied = True
-        tree = Tree(event.x, event.y, size)
-        window.bind('<Configure>', tree.generate_leaf)
-        tree.growing(0)
-        tree.generate_apple()
+        tree1 = Tree(event.x, event.y, size)
+        tree1.growing(0)
+        tree1.generate_apple()
     elif event.x > 400 and event.x < 600 and not place2_occupied:
         place2_occupied = True
-        tree = Tree(event.x, event.y, size)
-        window.bind('<Configure>', tree.generate_leaf)
-        tree.growing(0)
-        tree.generate_apple()
+        tree2 = Tree(event.x, event.y, size)
+        tree2.growing(0)
+        tree2.generate_apple()
     elif event.x > 800 and not place3_occupied:
         place3_occupied = True
-        tree = Tree(event.x, event.y, size)
-        window.bind('<Configure>', tree.generate_leaf)
-        tree.growing(0)
-        tree.generate_apple()
+        tree3 = Tree(event.x, event.y, size)
+        tree3.growing(0)
+        tree3.generate_apple()
     # tree = Tree(event.x, event.y, size)
     # tree.growing(0)
 
-
+tree1 = None
+tree2 = None
+tree3 = None
 
 place1_occupied = False
 place2_occupied = False
